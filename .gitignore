@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+*.pkl
+nohup.out
+gpu_results/
+model_results/
+sold_only_results/
+sold_quick_test/
+
+# Keep sample data but not results
+!sample_data.csv
