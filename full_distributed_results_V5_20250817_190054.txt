@@ -1,0 +1,15 @@
+TOWNHOUSE MODEL V5 - RESULTS
+============================================================
+Timestamp: 20250817_190054
+Features used: 55
+Training time (s): 6.7
+
+Performance:
+  Test MAE (raw ensemble): $47,995
+  Test MAPE (raw ensemble): 7.68%
+  Test WAPE (raw ensemble): 7.44%
+  Test R2   (raw ensemble): 0.7725
+  Test MAE (calibrated): $48,068
+  Test MAPE (calibrated): 7.73%
+  Test WAPE (calibrated): 7.45%
+  Test R2   (calibrated): 0.7692

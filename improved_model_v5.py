@@ -210,35 +210,50 @@ print("="*60)
 def rolling_median_ppsf_time(df_in, group_col, window, min_periods):
     """
     Time-based rolling median per group using datetime index.
-    Returns a DataFrame with [group_col, DATE_COL, new_col].
+    Memory efficient version that avoids creating massive duplicates.
     """
     new_col = f'ppsf_{window}_{group_col}'
     print(f"  Computing {new_col}...")
-
-    # Work on a copy sorted within group by date
-    work = df_in[[group_col, DATE_COL, 'sold_ppsf']].copy()
-    work = work.sort_values([group_col, DATE_COL])
-
-    def _group_roll(g):
-        # set index to date for offset window
-        ser = g.set_index(DATE_COL)['sold_ppsf'] \
-               .rolling(window=window, min_periods=min_periods).median().shift(1)
-        ser = ser.reindex(g.set_index(DATE_COL).index)
-        out = pd.DataFrame({
-            group_col: g[group_col].values,
-            DATE_COL: g[DATE_COL].values,
-            new_col: ser.values
-        })
-        return out
-
-    pieces = []
-    for key, g in work.groupby(group_col, sort=False):
-        pieces.append(_group_roll(g))
-    res = pd.concat(pieces, axis=0, ignore_index=True)
-
-    non_null = res[new_col].notna().sum()
-    print(f"    computed {non_null} values")
-    return res
+    
+    # Get unique groups
+    unique_groups = df_in[group_col].unique()
+    n_groups = len(unique_groups)
+    print(f"    Processing {n_groups} {group_col} groups...")
+    
+    results = []
+    for i, grp in enumerate(unique_groups, 1):
+        # Process each group
+        mask = df_in[group_col] == grp
+        group_data = df_in[mask].copy()
+        
+        if len(group_data) >= min_periods:
+            # Sort by date and compute rolling median
+            group_data = group_data.sort_values(DATE_COL)
+            rolled = (group_data.set_index(DATE_COL)['sold_ppsf']
+                     .rolling(window=window, min_periods=min_periods)
+                     .median()
+                     .shift(1))
+            
+            group_data[new_col] = rolled.values
+            results.append(group_data[[group_col, DATE_COL, new_col]])
+        
+        # Show progress
+        if i % 10 == 0 or i == n_groups:
+            progress = f"    Progress: {i}/{n_groups} groups ({100*i/n_groups:.1f}%)"
+            print(progress, end='\r')
+    
+    print()  # New line after progress
+    
+    if results:
+        result = pd.concat(results, ignore_index=True)
+        # Drop duplicates to minimize memory  
+        result = result.drop_duplicates(subset=[group_col, DATE_COL])
+        non_null = result[new_col].notna().sum()
+        print(f"    Computed {non_null} values (unique: {len(result)})")
+        return result
+    else:
+        print(f"    No data with sufficient samples")
+        return pd.DataFrame(columns=[group_col, DATE_COL, new_col])
 
 # Location features
 print("\nExtracting location features...")
