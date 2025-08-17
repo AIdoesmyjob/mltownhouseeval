@@ -1,0 +1,3 @@
+Test MAE: $56,928
+Test R²: 0.732
+Test WAPE: 0.085
