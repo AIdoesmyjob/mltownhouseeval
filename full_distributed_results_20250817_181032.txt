@@ -1,0 +1,10 @@
+FULL FEATURED DISTRIBUTED GPU MODEL RESULTS
+============================================================
+Timestamp: 20250817_181032
+Features used: 49
+Training time: 4.9 seconds
+
+Performance:
+  Test MAE (calibrated): $42,062
+  Test MAPE (calibrated): 6.9%
+  Test WAPE (calibrated): 6.5%

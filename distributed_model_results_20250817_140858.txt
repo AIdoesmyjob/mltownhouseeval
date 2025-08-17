@@ -1,0 +1,7 @@
+DISTRIBUTED GPU MODEL RESULTS
+Timestamp: 20250817_140858
+Training time: 3.7 seconds
+Test MAE (ensemble): $155,674
+Test WAPE (ensemble): 24.1%
+GPU 1 MAE: $157,455
+GPU 2 MAE: $154,034
